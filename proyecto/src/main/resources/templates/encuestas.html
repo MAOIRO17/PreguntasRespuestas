@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Encuesta</title>
+  </head>
+  <body>
+    <h1>Encuesta</h1>
+    <div id="encuesta"></div>
+
+    <script>
+      async function cargarEncuesta() {
+        const res = await fetch("/encuestas");
+        const encuestas = await res.json();
+        const encuesta = encuestas[0]; 
+        let html = `<h2>${encuesta.pregunta}</h2><ul>`;
+        encuesta.opciones.forEach((opcion) => {
+          html += `<li>${opcion.texto} - Votos: ${opcion.votos} 
+          <button onclick="votar(${opcion.id})">Votar</button></li>`;
+        });
+        html += "</ul>";
+        document.getElementById("encuesta").innerHTML = html;
+      }
+
+      async function votar(idOpcion) {
+        await fetch("/encuestas/votar/" + idOpcion, { method: "POST" });
+        cargarEncuesta();
+      }
+
+      cargarEncuesta();
+    </script>
+  </body>
+</html>
